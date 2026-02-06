@@ -1,0 +1,39 @@
+{
+    "name": "primecrypto",
+    "version": "1.0.0",
+    "description": "PrimeCrypto: AI-Native Cryptocurrency powered by Prime AI Sovereign OS",
+    "main": "index.js",
+    "scripts": {
+        "compile": "hardhat compile",
+        "test": "hardhat test",
+        "test:coverage": "hardhat coverage",
+        "deploy:testnet": "hardhat run scripts/deploy.ts --network base-sepolia",
+        "deploy:mainnet": "hardhat run scripts/deploy.ts --network base",
+        "verify": "hardhat run scripts/verify.ts",
+        "slither": "slither contracts/",
+        "clean": "hardhat clean",
+        "node": "hardhat node"
+    },
+    "keywords": [
+        "cryptocurrency",
+        "blockchain",
+        "ai",
+        "prime-ai",
+        "ethereum",
+        "base",
+        "defi"
+    ],
+    "author": "Prime AI",
+    "license": "MIT",
+    "devDependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+        "@openzeppelin/contracts": "^5.0.1",
+        "@types/node": "^20.11.0",
+        "hardhat": "^2.19.4",
+        "typescript": "^5.3.3"
+    },
+    "dependencies": {
+        "dotenv": "^16.3.1",
+        "ethers": "^6.10.0"
+    }
+}
