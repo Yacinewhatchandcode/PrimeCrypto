@@ -43,9 +43,22 @@ async function main() {
     const treasuryAddress = await treasury.getAddress();
     console.log(`   ✓ Treasury deployed: ${treasuryAddress}`);
 
+    // ============ Deploy QuadraticVoting ============
+    console.log("5. Deploying QuadraticVoting...");
+    const QuadraticVoting = await ethers.getContractFactory("QuadraticVoting");
+    const quadraticVoting = await QuadraticVoting.deploy(primeTokenAddress);
+    await quadraticVoting.waitForDeployment();
+    const quadraticVotingAddress = await quadraticVoting.getAddress();
+    console.log(`   ✓ QuadraticVoting deployed: ${quadraticVotingAddress}`);
+
+    // Grant PROPOSER_ROLE to deployer
+    const PROPOSER_ROLE = await quadraticVoting.PROPOSER_ROLE();
+    await quadraticVoting.grantRole(PROPOSER_ROLE, deployer.address);
+    console.log(`   ✓ PROPOSER_ROLE granted to deployer`);
+
     // ============ Initialize Token Distribution ============
     console.log("");
-    console.log("5. Initializing token distribution...");
+    console.log("6. Initializing token distribution...");
 
     // For initial deployment, we'll use deployer as placeholder for vesting contracts
     // In production, deploy proper vesting contracts first
@@ -61,13 +74,13 @@ async function main() {
     console.log("   ✓ Token distribution initialized");
 
     // ============ Link Treasury to Staking ============
-    console.log("6. Linking Treasury to Staking...");
+    console.log("7. Linking Treasury to Staking...");
     const linkTx = await treasury.setStakingContract(stakingAddress);
     await linkTx.wait();
     console.log("   ✓ Treasury linked to Staking");
 
     // ============ Fund Staking Reward Pool ============
-    console.log("7. Funding staking reward pool...");
+    console.log("8. Funding staking reward pool...");
     const rewardPoolAmount = ethers.parseEther("10000000"); // 10M PRIME
     const approveTx = await primeToken.approve(stakingAddress, rewardPoolAmount);
     await approveTx.wait();
@@ -82,10 +95,11 @@ async function main() {
     console.log("╚════════════════════════════════════════════════════════════╝");
     console.log("");
     console.log("Contract Addresses:");
-    console.log(`  PrimeToken:    ${primeTokenAddress}`);
-    console.log(`  AgentRewards:  ${agentRewardsAddress}`);
-    console.log(`  Staking:       ${stakingAddress}`);
-    console.log(`  Treasury:      ${treasuryAddress}`);
+    console.log(`  PrimeToken:       ${primeTokenAddress}`);
+    console.log(`  AgentRewards:     ${agentRewardsAddress}`);
+    console.log(`  Staking:          ${stakingAddress}`);
+    console.log(`  Treasury:         ${treasuryAddress}`);
+    console.log(`  QuadraticVoting:  ${quadraticVotingAddress}`);
     console.log("");
     console.log("Token Distribution:");
     console.log(`  Agent Rewards: ${ethers.formatEther(await primeToken.balanceOf(agentRewardsAddress))} PRIME`);
@@ -97,6 +111,7 @@ async function main() {
     console.log("  2. Add oracle addresses to AgentRewards");
     console.log("  3. Set up proper vesting contracts");
     console.log("  4. Add liquidity to DEX");
+    console.log("  5. Create first governance proposal via QuadraticVoting");
     console.log("");
 
     // Save deployment addresses
@@ -110,6 +125,7 @@ async function main() {
             AgentRewards: agentRewardsAddress,
             Staking: stakingAddress,
             Treasury: treasuryAddress,
+            QuadraticVoting: quadraticVotingAddress,
         },
         timestamp: new Date().toISOString(),
     };
